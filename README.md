@@ -76,7 +76,7 @@ A real-time, interactive sign language learning application powered by computer 
 
 2. **Clone the repository**:
    ```bash
-   git clone https://github.com/OleksiiKrasnoshtanov240247/sign-language.git
+   git clone https://github.com/Gfgf96/DSL-Learning.git
    cd sign-language
    ```
 
@@ -408,8 +408,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/OleksiiKrasnoshtanov240247/sign-language/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/OleksiiKrasnoshtanov240247/sign-language/discussions)
+- **Issues**: [GitHub Issues](https://github.com/Gfgf96/DSL-Learning/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Gfgf96/DSL-Learning/discussions)
 - **Email**: Contact via GitHub profile
 
 ## Star the Project
