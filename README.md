@@ -48,10 +48,12 @@ A real-time, interactive sign language learning application powered by computer 
 
 ### Frontend Stack
 
-- **Vanilla JavaScript** - No frameworks, pure performance
-- **WebRTC** - Browser-based webcam access
-- **WebSocket API** - Real-time data streaming
-- **CSS3** - Modern, responsive UI design
+- **Next.js 16** - App Router frontend for the learning UI
+- **React 19** - Component-based interface and state management
+- **TypeScript** - Typed frontend logic and shared response helpers
+- **Tailwind CSS 4** - Utility-first styling for the web experience
+- **next-themes** - Light/dark theme switching
+- **WebSocket API** - Real-time data streaming from the backend
 
 ## Prerequisites
 
@@ -85,7 +87,14 @@ A real-time, interactive sign language learning application powered by computer 
    uv sync
    ```
 
-4. **Activate the virtual environment**:
+4. **Install frontend dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   cd ..
+   ```
+
+5. **Activate the virtual environment**:
    ```bash
    # On Windows
    .venv\Scripts\activate
@@ -109,11 +118,22 @@ A real-time, interactive sign language learning application powered by computer 
    python main.py
    ```
 
-   This now downloads missing models and builds the frontend export automatically on startup, so the FastAPI app serves the web UI at `http://localhost:8000/`.
+   This downloads missing models and builds the frontend export automatically on startup, so the FastAPI app serves the web UI at `http://localhost:8000/`.
 
 3. **Open your browser**:
    - Navigate to `http://localhost:8000/`
    - The app will automatically use your webcam
+
+### Frontend Development
+
+If you want to work on the UI directly, run the Next.js app from the `frontend/` folder:
+
+```bash
+cd frontend
+npm run dev
+```
+
+That starts the site on `http://localhost:3000/` with live reload.
 
 ### Using the App
 
@@ -180,10 +200,13 @@ sign-language/
 │           ├── cnn_model.py    # ResidualMLP
 │           ├── downloader.py   # Auto-downloader script
 │           └── config.py       # Model config
-├── frontend/                   # Web interface
-│   ├── index.html              # Main HTML structure
-│   ├── app.js                  # Application logic
-│   └── app.css                 # Styling
+├── frontend/                   # Next.js web interface
+│   ├── src/
+│   │   ├── app/                # App Router pages and global layout
+│   │   ├── components/         # UI components and webcam view
+│   │   └── lib/                # Frontend helpers and response parsing
+│   ├── public/                 # Static assets
+│   └── package.json           # Frontend build and dev scripts
 ├── main.py                     # Web API entry point
 ├── cli.py                      # Root CLI runner
 ├── pyproject.toml            # Python project metadata (uv)
