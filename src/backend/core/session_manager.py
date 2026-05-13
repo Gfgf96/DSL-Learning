@@ -318,7 +318,7 @@ class UserSession:
         self.sentence_index = 0
         if self.target_sentence:
             self._advance_to_next_valid_char()
-            print(f"🎯 Target sentence set: '{self.target_sentence}'")
+            print(f"[INFO] Target sentence set: '{self.target_sentence}'")
         else:
             self.current_letter = None
             print("🆓 Free mode activated")
@@ -359,7 +359,7 @@ class UserSession:
         # Mark as attempt (not counted as correct)
         self.total_attempts += 1
         
-        print(f"⏭️ Skipped letter '{skipped_letter}' -> '{self.current_letter}'")
+        print(f"[INFO] Skipped letter '{skipped_letter}' -> '{self.current_letter}'")
         
         return {
             "match": False,

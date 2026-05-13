@@ -24,19 +24,19 @@ LETTER_SOURCE = {
     'A': 'asl', 'B': 'asl', 'C': 'asl', 'D': 'asl',
     'E': 'mixed',  # Mix ASL + DGS
     'F': 'asl',
-    'G': 'dgs',    # ⚠️ CRITICAL! ASL is horizontal
-    'H': 'dgs',    # ⚠️ CRITICAL! Orientation differs
+    'G': 'dgs',    # [WARNING] CRITICAL! ASL is horizontal
+    'H': 'dgs',    # [WARNING] CRITICAL! Orientation differs
     'I': 'asl',
     # J - excluded (dynamic gesture)
     'K': 'asl',
     'L': 'asl',
-    'M': 'dgs',    # ⚠️ CRITICAL! Different configuration
-    'N': 'dgs',    # ⚠️ CRITICAL! Different configuration
+    'M': 'dgs',    # [WARNING] CRITICAL! Different configuration
+    'N': 'dgs',    # [WARNING] CRITICAL! Different configuration
     'O': 'asl',
     'P': 'dgs',    # Unique form (ideally LSF, but using DGS)
     'Q': 'dgs',    # Orientation issue
     'R': 'asl', 'S': 'asl',
-    'T': 'dgs',    # ⚠️ CRITICAL! ASL T is obscene in Netherlands!
+    'T': 'dgs',    # [WARNING] CRITICAL! ASL T is obscene in Netherlands!
     'U': 'asl', 'V': 'asl', 'W': 'asl', 'X': 'asl', 'Y': 'asl',
     # Z - excluded (dynamic gesture)
 }
@@ -93,7 +93,7 @@ class FrankensteinBuilder:
         """Extract landmarks for letter from ASL images."""
         letter_path = self.asl_path / letter.upper()
         if not letter_path.exists():
-            print(f"   ⚠️ Folder {letter} not found in ASL")
+            print(f"   [WARNING] Folder {letter} not found in ASL")
             return np.array([])
         
         images = list(letter_path.glob("*.jpg")) + list(letter_path.glob("*.png"))
@@ -113,7 +113,7 @@ class FrankensteinBuilder:
         """Get landmarks for letter from DGS CSV."""
         letter_df = self.dgs_df[self.dgs_df['label'] == letter.upper()]
         if len(letter_df) == 0:
-            print(f"   ⚠️ Letter {letter} not found in DGS")
+            print(f"   [WARNING] Letter {letter} not found in DGS")
             return np.array([])
         
         # Take only coordinates (without label)
@@ -123,7 +123,7 @@ class FrankensteinBuilder:
     def build(self):
         """Build composite dataset."""
         print("=" * 60)
-        print("🧟 NGT FRANKENSTEIN DATASET BUILDER")
+        print("[INFO] NGT FRANKENSTEIN DATASET BUILDER")
         print("=" * 60)
         
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -132,7 +132,7 @@ class FrankensteinBuilder:
         stats = {}
         
         for letter, source in LETTER_SOURCE.items():
-            critical = "🔴" if letter in CRITICAL_LETTERS else "  "
+            critical = "[CRITICAL]" if letter in CRITICAL_LETTERS else "          "
             print(f"\n{critical} Letter {letter} ← {source.upper()}")
             
             if source == 'asl':
@@ -142,7 +142,7 @@ class FrankensteinBuilder:
                 landmarks = self.get_dgs_landmarks(letter, self.samples_per_class)
                 if len(landmarks) == 0:
                     # Fallback to ASL with warning
-                    print(f"   ⚠️ DGS empty, fallback to ASL (MAY CAUSE ERRORS!)")
+                    print(f"   [WARNING] DGS empty, fallback to ASL (MAY CAUSE ERRORS!)")
                     landmarks = self.extract_asl_landmarks(letter, self.samples_per_class)
                     
             elif source == 'mixed':
@@ -158,7 +158,7 @@ class FrankensteinBuilder:
                 all_data.append([letter] + list(lm))
             
             stats[letter] = {'source': source, 'count': len(landmarks)}
-            print(f"   ✅ {len(landmarks)} samples")
+            print(f"   [OK] {len(landmarks)} samples")
         
         # Create DataFrame
         columns = ['label'] + [f'coord_{i}' for i in range(63)]
@@ -167,7 +167,7 @@ class FrankensteinBuilder:
         # Save CSV
         csv_path = self.output_path / "ngt_frankenstein_landmarks.csv"
         df.to_csv(csv_path, index=False)
-        print(f"\n💾 Saved: {csv_path}")
+        print(f"\n[INFO] Saved: {csv_path}")
         
         # Also save as numpy
         np.savez(
@@ -182,25 +182,25 @@ class FrankensteinBuilder:
     def _print_report(self, stats: dict, df: pd.DataFrame):
         """Print final report."""
         print("\n" + "=" * 60)
-        print("📊 REPORT")
+        print("[INFO] REPORT")
         print("=" * 60)
         
-        print(f"\n📁 Path: {self.output_path}")
-        print(f"📈 Total samples: {len(df):,}")
-        print(f"🔤 Classes: {df['label'].nunique()}")
+        print(f"\n[INFO] Path: {self.output_path}")
+        print(f"[INFO] Total samples: {len(df):,}")
+        print(f"[INFO] Classes: {df['label'].nunique()}")
         
-        print("\n📋 Per letter:")
+        print("\n[INFO] Per letter:")
         print("-" * 40)
         for letter in sorted(stats.keys()):
             data = stats[letter]
-            critical = "🔴" if letter in CRITICAL_LETTERS else "  "
+            critical = "[CRITICAL]" if letter in CRITICAL_LETTERS else "          "
             print(f"  {critical} {letter}: {data['count']:4d} | {data['source']}")
         
         # Warnings
-        print("\n⚠️ REMINDER:")
+        print("\n[WARNING] REMINDER:")
         print("   Letters G, H, M, N, P, Q, T taken from DGS")
         print("   (ASL versions are NOT compatible with NGT!)")
-        print("\n   J and Z excluded (dynamic gestures)")
+        print("   (J and Z excluded - dynamic gestures)")
 
 
 # =============================================================================
@@ -220,4 +220,4 @@ if __name__ == "__main__":
     )
     
     df = builder.build()
-    print("\n✅ Done!")
+    print("\n[OK] Done!")

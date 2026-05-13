@@ -112,7 +112,7 @@ def main():
     
     # Save
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    print(f"\n💾 Saving: {OUTPUT_PATH}")
+    print(f"\n[INFO] Saving: {OUTPUT_PATH}")
     np.savez(OUTPUT_PATH, X=X_final, y=y_final)
     
     # Also CSV
@@ -121,17 +121,17 @@ def main():
     columns = ['label'] + [f'coord_{i}' for i in range(63)]
     df = pd.DataFrame(np.column_stack([y_final, X_final]), columns=columns)
     df.to_csv(csv_path, index=False)
-    print(f"💾 CSV: {csv_path}")
+    print(f"[INFO] CSV: {csv_path}")
     
     # Report
     print("\n" + "=" * 60)
-    print("📊 RESULT")
+    print("[INFO] RESULT")
     print("=" * 60)
     print(f"   Original: {len(X_orig):,} samples")
     print(f"   Augmented: {len(X_final):,} samples")
     print(f"   Classes: {len(set(y_final))}")
     
-    print("\n✅ Done!")
+    print("\n[OK] Done!")
 
 
 if __name__ == "__main__":

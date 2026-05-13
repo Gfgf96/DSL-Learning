@@ -52,7 +52,7 @@ class DynamicSignPredictor:
     def _load_model(self):
         """Load trained LSTM model."""
         if not self.model_path.exists():
-            print(f"⚠ Dynamic model not found: {self.model_path}")
+            print(f"[WARNING] Dynamic model not found: {self.model_path}")
             print("   Dynamic letters (J, Z) will not work.")
             return
         
