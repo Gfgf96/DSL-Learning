@@ -22,6 +22,7 @@ def frontend_export_exists() -> bool:
 def ensure_frontend_export() -> Path:
     """Build the frontend export if it is missing and return the export directory."""
     if frontend_export_exists():
+        print(" Frontend export found - skipping build")
         return FRONTEND_OUT_DIR
 
     npm_executable = shutil.which("npm")

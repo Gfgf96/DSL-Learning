@@ -15,7 +15,7 @@ echo Project root: %projectRoot%
 echo.
 
 REM Step 1: Check and install uv if needed
-echo [1/5] Checking for uv package manager...
+echo [1/6] Checking for uv package manager...
 where uv >nul 2>nul
 if %errorlevel% neq 0 (
     echo   uv not found. Installing...
@@ -30,7 +30,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Step 2: Check and install Node.js if needed
-echo [2/5] Checking for Node.js...
+echo [2/6] Checking for Node.js...
 where node >nul 2>nul
 if %errorlevel% neq 0 (
     echo   Node.js not found. Installing via winget...
@@ -54,8 +54,8 @@ if %errorlevel% neq 0 (
 )
 echo   Python dependencies installed successfully!
 
-REM Step 4: Install frontend dependencies
-echo [4/5] Installing frontend dependencies...
+REM Step 4: Install frontend dependencies and build
+echo [4/6] Installing frontend dependencies...
 cd frontend
 call npm install
 if %errorlevel% neq 0 (
@@ -66,8 +66,19 @@ if %errorlevel% neq 0 (
 cd ..
 echo   Frontend dependencies installed successfully!
 
-REM Step 5: Verify setup
-echo [5/5] Verifying setup...
+echo [5/6] Building frontend export...
+cd frontend
+call npm run build
+if %errorlevel% neq 0 (
+    echo   ERROR: Failed to build frontend
+    cd ..
+    exit /b 1
+)
+cd ..
+echo   Frontend build completed successfully!
+
+REM Step 6: Verify setup
+echo [6/6] Verifying setup...
 for /f "tokens=*" %%i in ('uv run python --version') do set pythonVersion=%%i
 for /f "tokens=*" %%i in ('node --version') do set nodeVersion=%%i
 for /f "tokens=*" %%i in ('npm --version') do set npmVersion=%%i
