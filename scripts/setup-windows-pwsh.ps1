@@ -15,7 +15,7 @@ Write-Host "Project root: $projectRoot" -ForegroundColor Gray
 Write-Host ""
 
 # Step 1: Check and install uv if needed
-Write-Host "[1/5] Checking for uv package manager..." -ForegroundColor Yellow
+Write-Host "[1/6] Checking for uv package manager..." -ForegroundColor Yellow
 $uvExists = $null -ne (Get-Command uv -ErrorAction SilentlyContinue)
 
 if (-not $uvExists) {
@@ -27,7 +27,7 @@ if (-not $uvExists) {
 }
 
 # Step 2: Check and install Node.js if needed
-Write-Host "[2/5] Checking for Node.js..." -ForegroundColor Yellow
+Write-Host "[2/6] Checking for Node.js..." -ForegroundColor Yellow
 $nodeExists = $null -ne (Get-Command node -ErrorAction SilentlyContinue)
 
 if (-not $nodeExists) {
@@ -41,7 +41,7 @@ if (-not $nodeExists) {
 }
 
 # Step 3: Install Python dependencies with uv
-Write-Host "[3/5] Installing Python dependencies with uv..." -ForegroundColor Yellow
+Write-Host "[3/6] Installing Python dependencies with uv..." -ForegroundColor Yellow
 try {
     uv sync
     Write-Host "  Python dependencies installed successfully!" -ForegroundColor Green
@@ -51,22 +51,27 @@ try {
     exit 1
 }
 
-# Step 4: Install frontend dependencies
+# Step 4: Install frontend dependencies and build
 Write-Host "[4/5] Installing frontend dependencies..." -ForegroundColor Yellow
 try {
     Push-Location frontend
     npm install
     Write-Host "  Frontend dependencies installed successfully!" -ForegroundColor Green
+    
+    Write-Host "[5/6] Building frontend export..." -ForegroundColor Yellow
+    npm run build
+    Write-Host "  Frontend build completed successfully!" -ForegroundColor Green
+    
     Pop-Location
 } catch {
-    Write-Host "  ERROR: Failed to install frontend dependencies" -ForegroundColor Red
+    Write-Host "  ERROR: Failed to install or build frontend" -ForegroundColor Red
     Write-Host "  Error: $_" -ForegroundColor Red
     Pop-Location
     exit 1
 }
 
-# Step 5: Verify setup
-Write-Host "[5/5] Verifying setup..." -ForegroundColor Yellow
+# Step 6: Verify setup
+Write-Host "[6/6] Verifying setup..." -ForegroundColor Yellow
 try {
     $pythonVersion = uv run python --version
     Write-Host "  Python: $pythonVersion" -ForegroundColor Green

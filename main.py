@@ -25,7 +25,7 @@ def main():
         # Check and download models before starting server
         check_and_download_models()
 
-        # Build the frontend export so FastAPI can serve the app at /
+        # Build or verify frontend export (skips if already built)
         ensure_frontend_export()
 
         from src.backend.api.routes import app

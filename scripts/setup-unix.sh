@@ -17,7 +17,7 @@ echo "Project root: $PROJECT_ROOT"
 echo ""
 
 # Step 1: Check and install uv if needed
-echo "[1/5] Checking for uv package manager..."
+echo "[1/6] Checking for uv package manager..."
 if ! command -v uv &> /dev/null; then
     echo "  uv not found. Installing..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -29,7 +29,7 @@ else
 fi
 
 # Step 2: Check and install Node.js if needed
-echo "[2/5] Checking for Node.js..."
+echo "[2/6] Checking for Node.js..."
 if ! command -v node &> /dev/null; then
     echo "  Node.js not found. Installing..."
     if command -v brew &> /dev/null; then
@@ -54,23 +54,30 @@ else
 fi
 
 # Step 3: Install Python dependencies with uv
-echo "[3/5] Installing Python dependencies with uv..."
+echo "[3/6] Installing Python dependencies with uv..."
 if ! uv sync; then
     echo "  ERROR: Failed to sync Python dependencies"
     exit 1
 fi
 echo "  Python dependencies installed successfully!"
 
-# Step 4: Install frontend dependencies
-echo "[4/5] Installing frontend dependencies..."
+# Step 4: Install frontend dependencies and build
+echo "[4/6] Installing frontend dependencies..."
 if ! (cd frontend && npm install); then
     echo "  ERROR: Failed to install frontend dependencies"
     exit 1
 fi
 echo "  Frontend dependencies installed successfully!"
 
-# Step 5: Verify setup
-echo "[5/5] Verifying setup..."
+echo "[5/6] Building frontend export..."
+if ! (cd frontend && npm run build); then
+    echo "  ERROR: Failed to build frontend"
+    exit 1
+fi
+echo "  Frontend build completed successfully!"
+
+# Step 6: Verify setup
+echo "[6/6] Verifying setup..."
 pythonVersion=$(uv run python --version)
 echo "  Python: $pythonVersion"
 echo "  Node.js: $(node --version)"
