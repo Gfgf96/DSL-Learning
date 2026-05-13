@@ -203,7 +203,7 @@ async def websocket_endpoint(websocket: WebSocket):
     - Server -> Client: DetectionResponse
     """
     await websocket.accept()
-    print("✅ WebSocket connected")
+    print("[OK] WebSocket connected")
     
     session = None
     is_dynamic = False
@@ -296,7 +296,7 @@ async def websocket_endpoint(websocket: WebSocket):
             
             elif message_type == "skip":
                 # Skip current letter and move to next one
-                print(f"⏭️ Skipping letter: {session.current_letter}")
+                print(f"[INFO] Skipping letter: {session.current_letter}")
                 
                 # Stop recording if active
                 if session.is_recording:

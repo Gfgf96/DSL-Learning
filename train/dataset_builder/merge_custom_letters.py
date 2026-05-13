@@ -96,7 +96,7 @@ def normalize_landmarks(coords):
 
 def main():
     print("=" * 60)
-    print("🔧 REPLACING H, P, T, W IN DATASET")
+    print("[INFO] REPLACING H, P, T, W IN DATASET")
     print("=" * 60)
     
     # 1. Load custom letters
@@ -107,7 +107,7 @@ def main():
         if path.exists():
             data = np.load(path)
             custom_data[letter] = data
-            print(f"   ✅ {letter}: {len(data)} samples")
+            print(f"   [OK] {letter}: {len(data)} samples")
         else:
             print(f"   ❌ {letter}: file not found!")
     
@@ -169,7 +169,7 @@ def main():
     
     # 7. Save
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    print(f"\n💾 7. Saving: {OUTPUT_PATH}")
+    print(f"\n[INFO] 7. Saving: {OUTPUT_PATH}")
     np.savez(OUTPUT_PATH, X=X_final, y=y_final)
     
     # Also save CSV
@@ -178,11 +178,11 @@ def main():
     columns = ['label'] + [f'coord_{i}' for i in range(63)]
     df = pd.DataFrame(np.column_stack([y_final, X_final]), columns=columns)
     df.to_csv(csv_path, index=False)
-    print(f"💾 CSV: {csv_path}")
+    print(f"[INFO] CSV: {csv_path}")
     
     # Report
     print("\n" + "=" * 60)
-    print("📊 FINAL REPORT")
+    print("[INFO] FINAL REPORT")
     print("=" * 60)
     print(f"   Total samples: {len(X_final)}")
     print(f"   Classes: {len(set(y_final))}")
@@ -193,7 +193,7 @@ def main():
         marker = "🆕" if letter in LETTERS_TO_REPLACE else "  "
         print(f"   {marker} {letter}: {counts[letter]}")
     
-    print("\n✅ Done!")
+    print("\n[OK] Done!")
 
 
 if __name__ == "__main__":

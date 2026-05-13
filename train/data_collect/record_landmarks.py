@@ -69,7 +69,7 @@ class LandmarkRecorder:
             if self.data[letter]:
                 arr = np.array(self.data[letter])
                 np.save(OUTPUT_DIR / f"{letter}_landmarks.npy", arr)
-                print(f"💾 {letter}: {len(self.data[letter])} samples")
+                print(f"[INFO] {letter}: {len(self.data[letter])} samples")
     
     def get_landmarks(self, frame):
         """Extract landmarks from frame."""
@@ -161,7 +161,7 @@ class LandmarkRecorder:
                     if time.time() - self.last_save_time > 0.2:
                         self.data[current_letter].append(landmarks)
                         self.last_save_time = time.time()
-                        print(f"✅ {current_letter}: {len(self.data[current_letter])}")
+                        print(f"[OK] {current_letter}: {len(self.data[current_letter])}")
             elif key == ord('1'):
                 self.current_letter_idx = 0
             elif key == ord('2'):
@@ -175,15 +175,15 @@ class LandmarkRecorder:
         cv2.destroyAllWindows()
         
         # Saving
-        print("\n💾 Saving...")
+        print("\n[INFO] Saving...")
         self.save_all()
-        print("✅ Done!")
+        print("[OK] Done!")
         
         # Summary
-        print("\n📊 SUMMARY:")
+        print("\n[INFO] SUMMARY:")
         for letter in LETTERS:
             cnt = len(self.data[letter])
-            status = "✅" if cnt >= 50 else "⚠️"
+            status = "[OK]" if cnt >= 50 else "[WARNING]"
             print(f"   {status} {letter}: {cnt} samples")
  
  

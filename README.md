@@ -63,9 +63,47 @@ A real-time, interactive sign language learning application powered by computer 
 
 ## Installation
 
-### Option 1: Using uv (Recommended - Fast)
+### Automatic Setup (Recommended)
 
-[uv](https://github.com/astral-sh/uv) is an extremely fast Python package installer and resolver, written in Rust.
+We provide automated setup scripts in the `scripts/` folder that handle everything for you - no manual steps needed!
+
+Choose the script for your platform:
+
+**On Windows (PowerShell):**
+```powershell
+# Right-click PowerShell and select "Run as Administrator", then:
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\scripts\setup-windows-pwsh.ps1
+```
+
+**On Windows (Command Prompt):**
+```cmd
+scripts\setup-windows-cmd.bat
+```
+
+**On macOS/Linux:**
+```bash
+chmod +x scripts/setup-unix.sh
+./scripts/setup-unix.sh
+```
+
+Each setup script will:
+- Install `uv` (if not already installed)
+- Install Node.js (if not already installed)
+- Install all Python dependencies via `uv sync`
+- Install all frontend dependencies via `npm install`
+- Verify the complete setup
+
+After setup completes, you can immediately run:
+```bash
+uv run ./main.py
+```
+
+For more details, see [scripts/README.md](scripts/README.md).
+
+### Manual Setup (Alternative)
+
+If you prefer manual installation or the automated script doesn't work for you:
 
 1. **Install uv** (if not already installed):
    ```bash
@@ -79,10 +117,10 @@ A real-time, interactive sign language learning application powered by computer 
 2. **Clone the repository**:
    ```bash
    git clone https://github.com/Gfgf96/DSL-Learning.git
-   cd sign-language
+   cd DSL-Learning
    ```
 
-3. **Install dependencies and create virtual environment**:
+3. **Install Python dependencies**:
    ```bash
    uv sync
    ```
@@ -94,12 +132,11 @@ A real-time, interactive sign language learning application powered by computer 
    cd ..
    ```
 
-5. **Activate the virtual environment**:
+5. **Activate the virtual environment** (optional):
    ```bash
    # On Windows
    .venv\Scripts\activate
    
-   ```bash
    # On macOS/Linux
    source .venv/bin/activate
    ```

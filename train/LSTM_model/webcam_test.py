@@ -175,7 +175,7 @@ class WebcamTester:
                 break
             elif key == ord(' '):
                 if hand_detected and not self.predictor.is_collecting:
-                    print("🎬 Recording started...")
+                    print("[INFO] Recording started...")
                     self.predictor.start_collecting()
                     self.last_prediction = None
         

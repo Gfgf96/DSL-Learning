@@ -40,7 +40,7 @@ class DynamicSignPredictor:
     def _load_model(self):
         """Load trained model."""
         if not self.model_path.exists():
-            print(f"⚠️ Model not found: {self.model_path}")
+            print(f"[WARNING] Model not found: {self.model_path}")
             return
         
         checkpoint = torch.load(self.model_path, map_location=self.device)
@@ -65,7 +65,7 @@ class DynamicSignPredictor:
         self.model.to(self.device)
         self.model.eval()
         
-        print(f"✅ Loaded model: {self.model_path}")
+        print(f"[OK] Loaded model: {self.model_path}")
         print(f"   Accuracy: {checkpoint.get('val_acc', 'N/A'):.3f}")
     
     def normalize_landmarks(self, coords):

@@ -135,7 +135,7 @@ def plot_history(history, save_path):
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
-    print(f"📊 Saved: {save_path}")
+    print(f"[INFO] Saved: {save_path}")
 
 
 def plot_confusion_matrix(y_true, y_pred, save_path):
@@ -164,17 +164,17 @@ def plot_confusion_matrix(y_true, y_pred, save_path):
     plt.tight_layout()
     plt.savefig(save_path)
     plt.close()
-    print(f"📊 Saved: {save_path}")
+    print(f"[INFO] Saved: {save_path}")
 
 
 def train(model_type='lstm'):
     """Main training function."""
     print("=" * 60)
-    print("🏋️ TRAINING DYNAMIC SIGN MODEL (J/Z)")
+    print("[INFO] TRAINING DYNAMIC SIGN MODEL (J/Z)")
     print("=" * 60)
     
     device = config.DEVICE
-    print(f"\n🖥️ Device: {device}")
+    print(f"\n[INFO] Device: {device}")
     
     # Load data
     train_loader, test_loader, X_test, y_test = load_data()
@@ -207,7 +207,7 @@ def train(model_type='lstm'):
     )
     
     # Training loop
-    print(f"\n🚀 Training for {config.EPOCHS} epochs...")
+    print(f"\n[INFO] Training for {config.EPOCHS} epochs...")
     history = {'train_loss': [], 'train_acc': [], 'val_loss': [], 'val_acc': []}
     best_val_acc = 0
     patience_counter = 0
@@ -243,18 +243,18 @@ def train(model_type='lstm'):
                 }
             }, config.CHECKPOINT_PATH)
             patience_counter = 0
-            print(f"   💾 Saved best model (acc: {val_acc:.3f})")
+            print(f"   [INFO] Saved best model (acc: {val_acc:.3f})")
         else:
             patience_counter += 1
         
         # Early stopping
         if patience_counter >= config.PATIENCE:
-            print(f"\n⏹️ Early stopping at epoch {epoch+1}")
+            print(f"\n[INFO] Early stopping at epoch {epoch+1}")
             break
     
     # Final evaluation
     print("\n" + "=" * 60)
-    print("📊 FINAL EVALUATION")
+    print("[INFO] FINAL EVALUATION")
     print("=" * 60)
     
     # Load best model
@@ -263,8 +263,8 @@ def train(model_type='lstm'):
     
     _, test_acc, y_pred, y_true = evaluate(model, test_loader, criterion, device)
     
-    print(f"\n✅ Best Test Accuracy: {test_acc:.4f}")
-    print("\n📋 Classification Report:")
+    print(f"\n[OK] Best Test Accuracy: {test_acc:.4f}")
+    print("\n[INFO] Classification Report:")
     print(classification_report(y_true, y_pred, target_names=config.CLASSES))
     
     # Save plots
@@ -274,7 +274,7 @@ def train(model_type='lstm'):
     # Save classes
     np.save(config.MODEL_DIR / "classes.npy", np.array(config.CLASSES))
     
-    print("\n✅ Training complete!")
+    print("\n[OK] Training complete!")
     print(f"   Model saved: {config.CHECKPOINT_PATH}")
 
 
