@@ -26,11 +26,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Copy dependency files
 COPY pyproject.toml uv.lock ./
 
-# Install python dependencies using uv (production only, strictly matching lockfile)
-RUN uv sync --frozen --no-dev
+# Install python dependencies using uv (without installing the project itself to maximize layer caching)
+RUN uv sync --frozen --no-install-project --no-dev
 
 # Copy application source code
 COPY . .
+
+# Install the project itself
+RUN uv sync --frozen --no-dev
 
 # Copy built frontend from Stage 1
 COPY --from=frontend-builder /app/frontend/out /app/frontend/out
