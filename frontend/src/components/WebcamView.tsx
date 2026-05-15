@@ -48,6 +48,7 @@ export const WebcamView = memo(function WebcamView({
   // Expose the video stream when activated
   useEffect(() => {
     initCamera();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCameraActive]);
 
   // Timeout validation to detect frozen or black feed
