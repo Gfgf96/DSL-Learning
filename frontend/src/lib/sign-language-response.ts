@@ -105,7 +105,7 @@ export function extractRecognizedSentence(data: ServerMessage): string | null {
   if (typeof sentence === 'string') {
     return sentence;
   }
-  return typeof sentence === 'undefined' ? null : undefined as any;
+  return null;
 }
 
 /**
