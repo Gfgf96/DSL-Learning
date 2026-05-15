@@ -17,11 +17,12 @@ CUSTOM_DIR = Path("./data_collect/ngt_custom")
 MAIN_DATASET = Path("./data_collect/ngt_frankenstein_x10.npz")
 OUTPUT_PATH = Path("./data_collect/ngt_frankenstein_final.npz")
 
-LETTERS_TO_REPLACE = ['H', 'P', 'T', 'W']
+LETTERS_TO_REPLACE = ["H", "P", "T", "W"]
 AUGMENT_MULTIPLIER = 10
 
 
 # ============ AUGMENTATION ============
+
 
 def add_noise(coords, std=0.01):
     """Add random Gaussian noise."""
@@ -72,6 +73,7 @@ def augment_sample(coords):
 
 # ============ NORMALIZATION ============
 
+
 def normalize_landmarks(coords):
     """
     Normalize landmarks:
@@ -79,26 +81,27 @@ def normalize_landmarks(coords):
     2. Scale by hand size (distance to middle finger base)
     """
     points = coords.reshape(21, 3)
-    
+
     # Center on wrist
     wrist = points[0].copy()
     points = points - wrist
-    
+
     # Scale by hand size (point 9 = middle finger base)
     scale_factor = np.linalg.norm(points[9])
     if scale_factor > 0.001:
         points = points / scale_factor
-    
+
     return points.flatten()
 
 
 # ============ MAIN PIPELINE ============
 
+
 def main():
     print("=" * 60)
     print("[INFO] REPLACING H, P, T, W IN DATASET")
     print("=" * 60)
-    
+
     # 1. Load custom letters
     print("\n📂 1. Loading custom letters...")
     custom_data = {}
@@ -110,76 +113,79 @@ def main():
             print(f"   [OK] {letter}: {len(data)} samples")
         else:
             print(f"   ❌ {letter}: file not found!")
-    
+
     if not custom_data:
         print("\n❌ No custom data found! Exiting.")
         return
-    
+
     # 2. Augment custom letters
     print(f"\n🔄 2. Augmenting x{AUGMENT_MULTIPLIER}...")
     custom_augmented_X = []
     custom_augmented_y = []
-    
+
     for letter, data in custom_data.items():
         augmented = list(data)  # start with originals
         for _ in range(AUGMENT_MULTIPLIER - 1):
             for sample in data:
                 augmented.append(augment_sample(sample))
-        
+
         custom_augmented_X.extend(augmented)
         custom_augmented_y.extend([letter] * len(augmented))
         print(f"   {letter}: {len(data)} → {len(augmented)}")
-    
+
     custom_X = np.array(custom_augmented_X, dtype=np.float32)
     custom_y = np.array(custom_augmented_y)
-    
+
     # 3. Load main dataset and remove old letters
-    print(f"\n📂 3. Loading main dataset...")
+    print("\n📂 3. Loading main dataset...")
     main_data = np.load(MAIN_DATASET, allow_pickle=True)
-    X_main = main_data['X']
-    y_main = main_data['y']
+    X_main = main_data["X"]
+    y_main = main_data["y"]
     print(f"   Total: {len(X_main)} samples")
-    
+
     # Count how many we'll remove
     for letter in LETTERS_TO_REPLACE:
         count = (y_main == letter).sum()
         print(f"   Removing {letter}: {count} samples")
-    
+
     # Filter - keep everything except H, P, T, W
     mask = ~np.isin(y_main, LETTERS_TO_REPLACE)
     X_filtered = X_main[mask]
     y_filtered = y_main[mask]
     print(f"   After removal: {len(X_filtered)} samples")
-    
+
     # 4. Merge
     print("\n🔗 4. Merging...")
     X_combined = np.vstack([X_filtered, custom_X])
     y_combined = np.concatenate([y_filtered, custom_y])
     print(f"   Total: {len(X_combined)} samples")
-    
+
     # 5. Normalize ALL
     print("\n📐 5. Normalizing...")
-    X_normalized = np.array([normalize_landmarks(x) for x in X_combined], dtype=np.float32)
-    
+    X_normalized = np.array(
+        [normalize_landmarks(x) for x in X_combined], dtype=np.float32
+    )
+
     # 6. Shuffle
     print("\n🔀 6. Shuffling...")
     indices = np.random.permutation(len(X_normalized))
     X_final = X_normalized[indices]
     y_final = y_combined[indices]
-    
+
     # 7. Save
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     print(f"\n[INFO] 7. Saving: {OUTPUT_PATH}")
     np.savez(OUTPUT_PATH, X=X_final, y=y_final)
-    
+
     # Also save CSV
-    csv_path = str(OUTPUT_PATH).replace('.npz', '.csv')
+    csv_path = str(OUTPUT_PATH).replace(".npz", ".csv")
     import pandas as pd
-    columns = ['label'] + [f'coord_{i}' for i in range(63)]
+
+    columns = ["label"] + [f"coord_{i}" for i in range(63)]
     df = pd.DataFrame(np.column_stack([y_final, X_final]), columns=columns)
     df.to_csv(csv_path, index=False)
     print(f"[INFO] CSV: {csv_path}")
-    
+
     # Report
     print("\n" + "=" * 60)
     print("[INFO] FINAL REPORT")
@@ -188,11 +194,12 @@ def main():
     print(f"   Classes: {len(set(y_final))}")
     print("\n   Per letter:")
     from collections import Counter
+
     counts = Counter(y_final)
     for letter in sorted(counts.keys()):
         marker = "🆕" if letter in LETTERS_TO_REPLACE else "  "
         print(f"   {marker} {letter}: {counts[letter]}")
-    
+
     print("\n[OK] Done!")
 
 

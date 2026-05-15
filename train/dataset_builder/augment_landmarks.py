@@ -15,6 +15,7 @@ AUGMENT_MULTIPLIER = 10
 
 # ============ AUGMENTATION FUNCTIONS ============
 
+
 def add_noise(coords, std=0.01):
     """Add random Gaussian noise."""
     return coords + np.random.normal(0, std, coords.shape)
@@ -59,10 +60,10 @@ def mirror(coords):
 def augment_sample(coords):
     """Apply random augmentations to single sample."""
     aug = coords.copy()
-    
+
     # Always add some noise
     aug = add_noise(aug, std=np.random.uniform(0.005, 0.015))
-    
+
     # Random augmentations
     if np.random.random() < 0.7:
         aug = scale(aug)
@@ -72,57 +73,59 @@ def augment_sample(coords):
         aug = translate(aug)
     if np.random.random() < 0.3:
         aug = mirror(aug)
-    
+
     return aug
 
 
 # ============ MAIN ============
 
+
 def main():
     print("=" * 60)
     print(f"🔄 AUGMENTING LANDMARKS x{AUGMENT_MULTIPLIER}")
     print("=" * 60)
-    
+
     # Load
     print(f"\n📂 Loading: {INPUT_PATH}")
     data = np.load(INPUT_PATH, allow_pickle=True)
-    X_orig = data['X']
-    y_orig = data['y']
+    X_orig = data["X"]
+    y_orig = data["y"]
     print(f"   Original: {len(X_orig)} samples")
-    
+
     # Augment
-    print(f"\n🔄 Augmenting...")
+    print("\n🔄 Augmenting...")
     X_aug = list(X_orig)  # start with originals
     y_aug = list(y_orig)
-    
+
     for i in range(AUGMENT_MULTIPLIER - 1):
-        print(f"   Pass {i+2}/{AUGMENT_MULTIPLIER}...")
+        print(f"   Pass {i + 2}/{AUGMENT_MULTIPLIER}...")
         for x, label in zip(X_orig, y_orig):
             X_aug.append(augment_sample(x))
             y_aug.append(label)
-    
+
     X_final = np.array(X_aug, dtype=np.float32)
     y_final = np.array(y_aug)
-    
+
     # Shuffle
     print("\n🔀 Shuffling...")
     indices = np.random.permutation(len(X_final))
     X_final = X_final[indices]
     y_final = y_final[indices]
-    
+
     # Save
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     print(f"\n[INFO] Saving: {OUTPUT_PATH}")
     np.savez(OUTPUT_PATH, X=X_final, y=y_final)
-    
+
     # Also CSV
-    csv_path = str(OUTPUT_PATH).replace('.npz', '.csv')
+    csv_path = str(OUTPUT_PATH).replace(".npz", ".csv")
     import pandas as pd
-    columns = ['label'] + [f'coord_{i}' for i in range(63)]
+
+    columns = ["label"] + [f"coord_{i}" for i in range(63)]
     df = pd.DataFrame(np.column_stack([y_final, X_final]), columns=columns)
     df.to_csv(csv_path, index=False)
     print(f"[INFO] CSV: {csv_path}")
-    
+
     # Report
     print("\n" + "=" * 60)
     print("[INFO] RESULT")
@@ -130,7 +133,7 @@ def main():
     print(f"   Original: {len(X_orig):,} samples")
     print(f"   Augmented: {len(X_final):,} samples")
     print(f"   Classes: {len(set(y_final))}")
-    
+
     print("\n[OK] Done!")
 
 

@@ -33,9 +33,10 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
-      - name: Test Frontend
-        working-directory: ./frontend
-        run: npm run test -- --run
+      # Uncomment when you add frontend tests
+      # - name: Test Frontend
+      #   working-directory: ./frontend
+      #   run: npm run test -- --run
 
       - name: Setup Python using uv
         uses: astral-sh/setup-uv@v3
