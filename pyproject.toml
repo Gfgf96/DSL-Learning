@@ -29,3 +29,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src", "train"]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=3.5.0",
+    "ruff>=0.9.1",
+]
+
+[tool.ruff.lint]
+ignore = ["E402", "E741"]
