@@ -399,6 +399,9 @@ async def websocket_endpoint(websocket: WebSocket):
                                 pred_result = None
                             
                             if pred_result:
+                                if pred_result['predicted_class'] == 'Nonsense':
+                                    pred_result['predicted_class'] = '-'
+                                    
                                 # Add to session
                                 result = session.add_prediction(
                                     pred_result['predicted_class'],
@@ -462,6 +465,9 @@ async def websocket_endpoint(websocket: WebSocket):
                             print(f"❌ Static prediction error: {e}")
                             continue
                         
+                        if pred_result['predicted_class'] == 'Nonsense':
+                            pred_result['predicted_class'] = '-'
+                            
                         # Add prediction to session
                         result = session.add_prediction(
                             pred_result['predicted_class'],
@@ -495,8 +501,10 @@ async def websocket_endpoint(websocket: WebSocket):
                                 "session_id": session.id,
                                 "hand_detected": True,
                                 "recording": True,
-                                "current_prediction": pred_result['predicted_class'],
-                                "confidence": pred_result['confidence'],
+                                "prediction": {
+                                    "predicted_class": pred_result['predicted_class'],
+                                    "confidence": pred_result['confidence']
+                                },
                                 "message": "Recording in progress...",
                                 "progress": session.get_progress()
                             }
