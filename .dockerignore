@@ -1,0 +1,23 @@
+.git
+.github
+.venv
+node_modules
+__pycache__
+*.pyc
+.env
+.env.local
+
+# Build artifacts
+frontend/.next/
+frontend/out/
+*.egg-info
+build/
+dist/
+
+# IDE/OS files
+.vscode/
+.idea/
+.DS_Store
+
+# Do not bake models into the image, they will be downloaded at runtime
+models/

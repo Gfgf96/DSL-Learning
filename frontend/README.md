@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sign Language App Frontend
+
+This is the Next.js frontend for the Sign Language Learning application. It connects to the FastAPI backend via WebSockets to provide real-time gesture feedback.
+
+## Architecture
+
+- **Framework**: [Next.js 16](https://nextjs.org) (App Router)
+- **Styling**: Tailwind CSS v4
+- **State Management**: React Hooks (useState, useEffect, useRef)
+- **Communication**: Native WebSockets (`src/lib/hooks/useWebSocket.ts`)
+
+The frontend is designed to be fully static-exportable (`output: 'export'`), meaning it can be served directly by the FastAPI backend in production, eliminating the need for a separate Node.js server.
 
 ## Getting Started
 
-First, run the development server:
+First, ensure your FastAPI backend is running (which handles the WebSocket connection and model inference).
+
+Then, in this directory, run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development Guide
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Key Components
 
-## Learn More
+- `app/page.tsx`: The main landing page and application entry point.
+- `components/WebcamView.tsx`: Handles webcam capture, drawing hand landmarks via canvas, and passing frames to the WebSocket.
+- `components/Dashboard.tsx`: Displays session statistics, accuracy, and attempt counts.
+- `lib/api.ts`: API helper functions for fetching tutorial assets and managing sessions.
 
-To learn more about Next.js, take a look at the following resources:
+### WebSocket Integration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The app uses a custom hook `useWebSocket` that maintains a persistent connection to `ws://localhost:8000/ws`.
+- It sends base64 encoded frames during the "recording" phase.
+- It receives prediction results, confidence scores, and session state updates.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Production Build
 
-## Deploy on Vercel
+To build the frontend for production:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This will generate an `out/` directory containing the static HTML/CSS/JS files. The backend (`main.py`) will automatically serve these files.

@@ -7,6 +7,9 @@
 
 A real-time, interactive sign language learning application powered by computer vision and deep learning. Learn the NGT (Nederlandse Gebarentaal / Dutch Sign Language) alphabet with instant feedback from AI models.
 
+![App Demonstration](docs/assets/demo.gif)
+*Placeholder: Drop your 10-15 second UI demonstration GIF here.*
+
 ## Features
 
 - **Real-time Hand Detection** - Uses MediaPipe for accurate hand landmark detection
@@ -430,14 +433,7 @@ black src/
 isort src/
 ```
 
-## Performance Metrics
 
-| Model | Accuracy | F1-Score | Inference Time |
-|-------|----------|----------|----------------|
-| CNN (Static) | 94.8% | 0.947 | ~5ms per frame |
-| LSTM (Dynamic) | 91.5% | 0.912 | ~15ms per sequence |
-
-**Hardware**: Intel i7-12700K, RTX 3070, 32GB RAM
 
 ## Roadmap
 
@@ -456,7 +452,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Authors
 
-- **Oleksii Krasnoshtanov** - [@OleksiiKrasnoshtanov240247](https://github.com/OleksiiKrasnoshtanov240247)
+- **Alex Krasnoshtanov** - [@Gfgf96](https://github.com/Gfgf96)
 
 ## Acknowledgments
 
