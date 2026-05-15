@@ -26,10 +26,17 @@ export interface DotsState {
  * Extract and normalize progress statistics from server response
  */
 export function normalizeProgress(data: ServerMessage): NormalizedProgress | null {
-  const correct = typeof data.correct === 'number' ? data.correct : undefined;
-  const attempts = typeof data.attempts === 'number' ? data.attempts : undefined;
-  const accuracy = typeof data.accuracy === 'string' ? data.accuracy : undefined;
-  const timeRemaining = typeof data.time_remaining === 'string' ? data.time_remaining : undefined;
+  const progress = (data.progress as Record<string, unknown>) || {};
+  
+  const correctRaw = progress.total_correct ?? data.total_correct ?? data.correct;
+  const attemptsRaw = progress.total_attempts ?? data.total_attempts ?? data.attempts;
+  const accuracyRaw = progress.accuracy ?? data.accuracy;
+  const timeRemainingRaw = progress.time_remaining ?? data.time_remaining;
+
+  const correct = typeof correctRaw === 'number' ? correctRaw : undefined;
+  const attempts = typeof attemptsRaw === 'number' ? attemptsRaw : undefined;
+  const accuracy = typeof accuracyRaw === 'number' ? accuracyRaw.toFixed(1) : (typeof accuracyRaw === 'string' ? accuracyRaw : undefined);
+  const timeRemaining = typeof timeRemainingRaw === 'number' ? timeRemainingRaw.toFixed(1) : (typeof timeRemainingRaw === 'string' ? timeRemainingRaw : undefined);
 
   if (correct !== undefined && attempts !== undefined) {
     return {
@@ -47,7 +54,8 @@ export function normalizeProgress(data: ServerMessage): NormalizedProgress | nul
  * Extract target letter from server response
  */
 export function getTargetLetter(data: ServerMessage): string | null {
-  const targetLetter = data.target_letter;
+  const progress = (data.progress as Record<string, unknown>) || {};
+  const targetLetter = data.target_letter ?? progress.current_letter ?? data.current_letter;
   return typeof targetLetter === 'string' ? targetLetter : null;
 }
 
@@ -55,7 +63,8 @@ export function getTargetLetter(data: ServerMessage): string | null {
  * Extract tutorial URL from server response
  */
 export function getTutorialUrl(data: ServerMessage): string | null | undefined {
-  const tutorialUrl = data.tutorial_url;
+  const progress = (data.progress as Record<string, unknown>) || {};
+  const tutorialUrl = data.tutorial_url ?? progress.tutorial_url;
   if (typeof tutorialUrl === 'string') {
     return tutorialUrl;
   }
@@ -74,7 +83,7 @@ export function normalizePrediction(data: ServerMessage): NormalizedPrediction |
   }
 
   const prediction = data.prediction as Record<string, unknown>;
-  const letter = prediction.letter;
+  const letter = prediction.letter ?? prediction.predicted_class;
   const confidence = prediction.confidence;
 
   if (typeof letter === 'string' && typeof confidence === 'number') {
@@ -91,7 +100,8 @@ export function normalizePrediction(data: ServerMessage): NormalizedPrediction |
  * Extract recognized sentence from server response
  */
 export function extractRecognizedSentence(data: ServerMessage): string | null {
-  const sentence = data.recognized_sentence;
+  const progress = (data.progress as Record<string, unknown>) || {};
+  const sentence = data.recognized_sentence ?? progress.recognized_sentence;
   if (typeof sentence === 'string') {
     return sentence;
   }
