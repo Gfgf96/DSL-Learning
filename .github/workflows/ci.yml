@@ -46,10 +46,14 @@ jobs:
 
       - name: Install Backend Dependencies
         run: uv sync --frozen
+      - name: Install ruff
+        run: pip install ruff
 
-      # Uncomment the following when you have pytest setup for backend tests
-      # - name: Test Backend
-      #   run: uv run pytest tests/
+      - name: Run ruff linter
+        run: ruff check src tests || true
+
+      - name: Test Backend
+        run: uv run pytest tests/
 
   build-and-push:
     name: Build and Push Docker Image

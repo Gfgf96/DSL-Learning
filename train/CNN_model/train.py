@@ -7,9 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
-import seaborn as sns
 from model import ASLClassifier
-import config
+from . import config
 
 
 class ASLDataset(Dataset):
@@ -25,7 +24,7 @@ class ASLDataset(Dataset):
 
 
 class EarlyStopping:
-    def __init__(self, patience=7, min_delta=0.001, mode='max'):
+    def __init__(self, patience=7, min_delta=0.001, mode="max"):
         self.patience = patience
         self.min_delta = min_delta
         self.mode = mode
@@ -41,7 +40,7 @@ class EarlyStopping:
             return False
 
         improved = False
-        if self.mode == 'max':
+        if self.mode == "max":
             improved = current_score > self.best_score + self.min_delta
         else:
             improved = current_score < self.best_score - self.min_delta
@@ -80,75 +79,95 @@ def evaluate_model(model, data_loader, criterion, device):
     all_targets = np.array(all_targets)
 
     accuracy = (all_preds == all_targets).mean()
-    macro_f1 = f1_score(all_targets, all_preds, average='macro', zero_division=0)
-    weighted_f1 = f1_score(all_targets, all_preds, average='weighted', zero_division=0)
+    macro_f1 = f1_score(all_targets, all_preds, average="macro", zero_division=0)
+    weighted_f1 = f1_score(all_targets, all_preds, average="weighted", zero_division=0)
     avg_loss = total_loss / len(data_loader)
 
     return {
-        'loss': avg_loss,
-        'accuracy': accuracy,
-        'macro_f1': macro_f1,
-        'weighted_f1': weighted_f1,
-        'predictions': all_preds,
-        'targets': all_targets
+        "loss": avg_loss,
+        "accuracy": accuracy,
+        "macro_f1": macro_f1,
+        "weighted_f1": weighted_f1,
+        "predictions": all_preds,
+        "targets": all_targets,
     }
 
 
-def plot_training_history(history, save_path='training_history.png'):
+def plot_training_history(history, save_path="training_history.png"):
     fig, axes = plt.subplots(2, 2, figsize=(15, 10))
 
     # Loss
-    axes[0, 0].plot(history['train_loss'], label='Train Loss')
-    axes[0, 0].plot(history['val_loss'], label='Val Loss')
-    axes[0, 0].set_xlabel('Epoch')
-    axes[0, 0].set_ylabel('Loss')
-    axes[0, 0].set_title('Training and Validation Loss')
+    axes[0, 0].plot(history["train_loss"], label="Train Loss")
+    axes[0, 0].plot(history["val_loss"], label="Val Loss")
+    axes[0, 0].set_xlabel("Epoch")
+    axes[0, 0].set_ylabel("Loss")
+    axes[0, 0].set_title("Training and Validation Loss")
     axes[0, 0].legend()
     axes[0, 0].grid(True)
 
     # Accuracy
-    axes[0, 1].plot(history['train_acc'], label='Train Acc')
-    axes[0, 1].plot(history['val_acc'], label='Val Acc')
-    axes[0, 1].set_xlabel('Epoch')
-    axes[0, 1].set_ylabel('Accuracy')
-    axes[0, 1].set_title('Training and Validation Accuracy')
+    axes[0, 1].plot(history["train_acc"], label="Train Acc")
+    axes[0, 1].plot(history["val_acc"], label="Val Acc")
+    axes[0, 1].set_xlabel("Epoch")
+    axes[0, 1].set_ylabel("Accuracy")
+    axes[0, 1].set_title("Training and Validation Accuracy")
     axes[0, 1].legend()
     axes[0, 1].grid(True)
 
     # F1 Scores
-    axes[1, 0].plot(history['val_macro_f1'], label='Macro F1')
-    axes[1, 0].plot(history['val_weighted_f1'], label='Weighted F1')
-    axes[1, 0].set_xlabel('Epoch')
-    axes[1, 0].set_ylabel('F1 Score')
-    axes[1, 0].set_title('Validation F1 Scores')
+    axes[1, 0].plot(history["val_macro_f1"], label="Macro F1")
+    axes[1, 0].plot(history["val_weighted_f1"], label="Weighted F1")
+    axes[1, 0].set_xlabel("Epoch")
+    axes[1, 0].set_ylabel("F1 Score")
+    axes[1, 0].set_title("Validation F1 Scores")
     axes[1, 0].legend()
     axes[1, 0].grid(True)
 
     # Learning Rate
-    axes[1, 1].plot(history['learning_rates'])
-    axes[1, 1].set_xlabel('Epoch')
-    axes[1, 1].set_ylabel('Learning Rate')
-    axes[1, 1].set_title('Learning Rate Schedule')
-    axes[1, 1].set_yscale('log')
+    axes[1, 1].plot(history["learning_rates"])
+    axes[1, 1].set_xlabel("Epoch")
+    axes[1, 1].set_ylabel("Learning Rate")
+    axes[1, 1].set_title("Learning Rate Schedule")
+    axes[1, 1].set_yscale("log")
     axes[1, 1].grid(True)
 
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Training history plot saved to {save_path}")
 
 
-def plot_confusion_matrix(targets, predictions, class_names, save_path='confusion_matrix.png'):
+def plot_confusion_matrix(
+    targets, predictions, class_names, save_path="confusion_matrix.png"
+):
     cm = confusion_matrix(targets, predictions)
 
-    plt.figure(figsize=(12, 10))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=class_names, yticklabels=class_names)
-    plt.title('Confusion Matrix')
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
+    fig, ax = plt.subplots(figsize=(12, 10))
+    im = ax.imshow(cm, interpolation="nearest", cmap="Blues")
+    ax.figure.colorbar(im, ax=ax)
+    ax.set_xticks(range(len(class_names)))
+    ax.set_yticks(range(len(class_names)))
+    ax.set_xticklabels(class_names, rotation=45, ha="right")
+    ax.set_yticklabels(class_names)
+    ax.set_ylabel("True Label")
+    ax.set_xlabel("Predicted Label")
+    ax.set_title("Confusion Matrix")
+
+    # Annotate cells with integer counts
+    thresh = cm.max() / 2.0 if cm.size else 0
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(
+                j,
+                i,
+                format(cm[i, j], "d"),
+                ha="center",
+                va="center",
+                color="white" if cm[i, j] > thresh else "black",
+            )
+
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
     plt.close()
     print(f"Confusion matrix saved to {save_path}")
 
@@ -156,7 +175,7 @@ def plot_confusion_matrix(targets, predictions, class_names, save_path='confusio
 def train_pipeline():
     # Load data
     data = np.load(config.DATA_PATH, allow_pickle=True)
-    X, y = data['X'], data['y']
+    X, y = data["X"], data["y"]
 
     # Encode labels
     le = LabelEncoder()
@@ -166,37 +185,35 @@ def train_pipeline():
 
     # Three-way split: Train, Val, Test
     X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y_encoded,
+        X,
+        y_encoded,
         test_size=(config.VAL_SPLIT + config.TEST_SPLIT),
         random_state=config.RANDOM_SEED,
-        stratify=y_encoded
+        stratify=y_encoded,
     )
 
     val_size_adjusted = config.VAL_SPLIT / (config.VAL_SPLIT + config.TEST_SPLIT)
     X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp,
+        X_temp,
+        y_temp,
         test_size=(1 - val_size_adjusted),
         random_state=config.RANDOM_SEED,
-        stratify=y_temp
+        stratify=y_temp,
     )
 
-    print(f"Dataset splits - Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}")
+    print(
+        f"Dataset splits - Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}"
+    )
 
     # Create data loaders
     train_loader = DataLoader(
-        ASLDataset(X_train, y_train),
-        batch_size=config.BATCH_SIZE,
-        shuffle=True
+        ASLDataset(X_train, y_train), batch_size=config.BATCH_SIZE, shuffle=True
     )
     val_loader = DataLoader(
-        ASLDataset(X_val, y_val),
-        batch_size=config.BATCH_SIZE,
-        shuffle=False
+        ASLDataset(X_val, y_val), batch_size=config.BATCH_SIZE, shuffle=False
     )
     test_loader = DataLoader(
-        ASLDataset(X_test, y_test),
-        batch_size=config.BATCH_SIZE,
-        shuffle=False
+        ASLDataset(X_test, y_test), batch_size=config.BATCH_SIZE, shuffle=False
     )
 
     # Initialize model
@@ -206,25 +223,23 @@ def train_pipeline():
 
     # Learning rate scheduler
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer,
-        mode='max',
-        factor=config.LR_FACTOR,
-        patience=config.LR_PATIENCE
+        optimizer, mode="max", factor=config.LR_FACTOR, patience=config.LR_PATIENCE
     )
 
     # Early stopping
     early_stopping = EarlyStopping(
-        patience=config.PATIENCE,
-        min_delta=config.MIN_DELTA,
-        mode='max'
+        patience=config.PATIENCE, min_delta=config.MIN_DELTA, mode="max"
     )
 
     # Training history
     history = {
-        'train_loss': [], 'val_loss': [],
-        'train_acc': [], 'val_acc': [],
-        'val_macro_f1': [], 'val_weighted_f1': [],
-        'learning_rates': []
+        "train_loss": [],
+        "val_loss": [],
+        "train_acc": [],
+        "val_acc": [],
+        "val_macro_f1": [],
+        "val_weighted_f1": [],
+        "learning_rates": [],
     }
 
     best_val_f1 = 0
@@ -259,34 +274,40 @@ def train_pipeline():
         val_metrics = evaluate_model(model, val_loader, criterion, config.DEVICE)
 
         # Update history
-        history['train_loss'].append(avg_train_loss)
-        history['val_loss'].append(val_metrics['loss'])
-        history['train_acc'].append(train_accuracy)
-        history['val_acc'].append(val_metrics['accuracy'])
-        history['val_macro_f1'].append(val_metrics['macro_f1'])
-        history['val_weighted_f1'].append(val_metrics['weighted_f1'])
-        history['learning_rates'].append(optimizer.param_groups[0]['lr'])
+        history["train_loss"].append(avg_train_loss)
+        history["val_loss"].append(val_metrics["loss"])
+        history["train_acc"].append(train_accuracy)
+        history["val_acc"].append(val_metrics["accuracy"])
+        history["val_macro_f1"].append(val_metrics["macro_f1"])
+        history["val_weighted_f1"].append(val_metrics["weighted_f1"])
+        history["learning_rates"].append(optimizer.param_groups[0]["lr"])
 
         # Print progress
         print(f"Epoch {epoch + 1}/{config.EPOCHS}")
         print(f"  Train Loss: {avg_train_loss:.4f} | Train Acc: {train_accuracy:.4f}")
-        print(f"  Val Loss: {val_metrics['loss']:.4f} | Val Acc: {val_metrics['accuracy']:.4f}")
-        print(f"  Val Macro-F1: {val_metrics['macro_f1']:.4f} | Val Weighted-F1: {val_metrics['weighted_f1']:.4f}")
+        print(
+            f"  Val Loss: {val_metrics['loss']:.4f} | Val Acc: {val_metrics['accuracy']:.4f}"
+        )
+        print(
+            f"  Val Macro-F1: {val_metrics['macro_f1']:.4f} | Val Weighted-F1: {val_metrics['weighted_f1']:.4f}"
+        )
         print(f"  LR: {optimizer.param_groups[0]['lr']:.6f}")
 
         # Save best model
-        if val_metrics['weighted_f1'] > best_val_f1:
-            best_val_f1 = val_metrics['weighted_f1']
+        if val_metrics["weighted_f1"] > best_val_f1:
+            best_val_f1 = val_metrics["weighted_f1"]
             torch.save(model.state_dict(), config.MODEL_SAVE_PATH)
             print(f"  ** Best model saved! (Weighted F1: {best_val_f1:.4f}) **")
 
         # Learning rate scheduling
-        scheduler.step(val_metrics['weighted_f1'])
+        scheduler.step(val_metrics["weighted_f1"])
 
         # Early stopping check
-        if early_stopping(val_metrics['weighted_f1'], epoch):
+        if early_stopping(val_metrics["weighted_f1"], epoch):
             print(f"\nEarly stopping triggered at epoch {epoch + 1}")
-            print(f"Best epoch was {early_stopping.best_epoch + 1} with Weighted F1: {early_stopping.best_score:.4f}")
+            print(
+                f"Best epoch was {early_stopping.best_epoch + 1} with Weighted F1: {early_stopping.best_score:.4f}"
+            )
             break
 
     # Plot training history
@@ -307,18 +328,18 @@ def train_pipeline():
 
     # Classification report
     print("\nDetailed Classification Report:")
-    print(classification_report(
-        test_metrics['targets'],
-        test_metrics['predictions'],
-        target_names=class_names,
-        zero_division=0
-    ))
+    print(
+        classification_report(
+            test_metrics["targets"],
+            test_metrics["predictions"],
+            target_names=class_names,
+            zero_division=0,
+        )
+    )
 
     # Confusion matrix
     plot_confusion_matrix(
-        test_metrics['targets'],
-        test_metrics['predictions'],
-        class_names
+        test_metrics["targets"], test_metrics["predictions"], class_names
     )
 
     print(f"\nTraining complete! Best model saved to {config.MODEL_SAVE_PATH}")
