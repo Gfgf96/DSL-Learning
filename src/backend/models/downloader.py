@@ -14,7 +14,6 @@ MODELS = {
     "static/label_encoder.pkl": "static_label_encoder.pkl",
     "dynamic/best_model.pth": "dynamic_best_model.pth",
     "dynamic/classes.npy": "dynamic_classes.npy",
-    "mediapipe/hand_landmarker.task": "hand_landmarker.task",
 }
 
 

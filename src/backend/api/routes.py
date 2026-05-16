@@ -7,9 +7,9 @@ import base64
 import cv2
 import numpy as np
 import torch
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 from typing import Optional
@@ -25,17 +25,7 @@ from src.backend.detection.hand_capture import HandCapture, normalize
 from src.backend.detection.static_detector import StaticSignPredictor
 from src.backend.detection.dynamic_detector import DynamicSignPredictor
 
-# Initialize FastAPI app
-app = FastAPI(title="Sign Language Learning API")
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Add CORS middleware will be configured on app below
 
 # Global instances
 session_manager = SessionManager()
@@ -47,13 +37,13 @@ hand_capture = None
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 FRONTEND_DIR = PROJECT_ROOT / "frontend"
 FRONTEND_OUT_DIR = FRONTEND_DIR / "out"
-FRONTEND_OLD_DIR = PROJECT_ROOT / "frontend_old"
+ASSETS_DIR = PROJECT_ROOT / "src" / "assets"
 ASSETS_DIR = PROJECT_ROOT / "src" / "assets"
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Initialize predictors on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan manager to initialize and cleanup global predictors."""
     global static_predictor, dynamic_predictor, hand_capture
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -86,6 +76,23 @@ async def startup_event():
             print(f" Failed to load dynamic model: {e}")
     else:
         print(f" Dynamic model not found: {DYNAMIC_MODEL_PATH}")
+
+    # Create app and configure middleware
+    # NOTE: For demo purposes we allow all origins. In production restrict
+    # `allow_origins` to the known frontend host(s) and avoid `"*"`.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    yield
+
+
+# Create the FastAPI app with lifespan support
+app = FastAPI(title="Sign Language Learning API", lifespan=lifespan)
 
 
 # get_index removed in favor of root static mount
@@ -572,18 +579,6 @@ if FRONTEND_OUT_DIR.exists() and FRONTEND_OUT_DIR.is_dir():
     app.mount(
         "/", StaticFiles(directory=str(FRONTEND_OUT_DIR), html=True), name="static_out"
     )
-elif FRONTEND_OLD_DIR.exists() and FRONTEND_OLD_DIR.is_dir():
-    # Fallback to old frontend behavior
-    app.mount(
-        "/static", StaticFiles(directory=str(FRONTEND_OLD_DIR)), name="static_old"
-    )
-
-    @app.get("/", response_class=HTMLResponse)
-    async def get_index():
-        index_path = FRONTEND_OLD_DIR / "index.html"
-        if index_path.exists():
-            return FileResponse(index_path)
-        return HTMLResponse("<h1>Frontend old not found</h1>")
 
 
 if __name__ == "__main__":

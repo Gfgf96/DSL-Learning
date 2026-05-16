@@ -197,7 +197,7 @@ That starts the site on `http://localhost:3000/` with live reload.
 ## Project Structure
 
 ```
-sign-language/
+DSL-Learning/
 ├── train/                      # Training and dataset utilities
 │   ├── CNN_model/              # Static sign classifier (ResidualMLP)
 │   │   ├── model.py            # CNN architecture
@@ -278,12 +278,12 @@ DYNAMIC_BUFFER_SIZE = 30        # Frames needed for LSTM (J, Z)
 #### CNN Model (`src/backend/models/config.py`):
 ```python
 INPUT_SIZE = 63                 # 21 landmarks × 3 coordinates
-NUM_CLASSES = 25                # 24 letters + nonsense class
+NUM_CLASSES = 24                # 24 letters (A-I, K-Y)
 BATCH_SIZE = 64
 LEARNING_RATE = 0.001
 ```
 
-#### LSTM Model (`LSTM_model/config.py`):
+#### LSTM Model (`train/LSTM_model/config.py`):
 ```python
 SEQUENCE_LENGTH = 30            # Frames per sequence
 INPUT_SIZE = 63                 # Features per frame
@@ -419,8 +419,8 @@ We welcome contributions! Please follow these steps:
 
 ```bash
 # Clone your fork
-git clone https://github.com/YOUR_USERNAME/sign-language.git
-cd sign-language
+   git clone https://github.com/Gfgf96/DSL-Learning.git
+   cd DSL-Learning
 
 # Install dev dependencies
 uv pip install -e ".[dev]"

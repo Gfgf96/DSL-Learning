@@ -1,3 +1,5 @@
+<!-- MIGRATED: frontend/AGENTS.md -->
+<!-- This file was moved from `frontend/` to reduce noise in the public UI. -->
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
