@@ -46,11 +46,11 @@ jobs:
 
       - name: Install Backend Dependencies
         run: uv sync --frozen
-      - name: Install ruff
-        run: pip install ruff
+      - name: Install ruff and pytest in uv environment
+        run: uv pip install ruff pytest
 
       - name: Run ruff linter
-        run: ruff check src tests || true
+        run: uv run ruff check src tests || true
 
       - name: Test Backend
         run: uv run pytest tests/
