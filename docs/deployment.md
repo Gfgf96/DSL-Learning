@@ -45,4 +45,3 @@ Since the image is automatically pushed to `ghcr.io`, anyone (or any deployment 
 docker pull ghcr.io/gfgf96/dsl-learning:latest
 docker run -p 8000:8000 ghcr.io/gfgf96/dsl-learning:latest
 ```
-small change
