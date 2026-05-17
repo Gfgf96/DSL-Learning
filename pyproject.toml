@@ -8,7 +8,7 @@ dependencies = [
     "fastapi",
     "fastdtw",
     "matplotlib",
-    "mediapipe==0.10.14",
+    "mediapipe==0.10.35",
     "numpy",
     "opencv-python",
     "pandas",
