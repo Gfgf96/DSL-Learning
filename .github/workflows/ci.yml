@@ -50,7 +50,7 @@ jobs:
         run: uv pip install ruff pytest
 
       - name: Run ruff linter
-        run: uv run ruff check src tests || true
+        run: uv run ruff check src tests
 
       - name: Test Backend
         run: uv run pytest tests/

@@ -213,12 +213,10 @@ DSL-Learning/
 ├── models/                     # Trained model weights
 │   ├── static/                 # CNN model (A-I, K-Y)
 │   │   ├── best_model.pth
-│   │   └── classes.npy
-│   ├── dynamic/                # LSTM model (J, Z)
-│   │   ├── best_model.pth
-│   │   └── classes.npy
-│   └── mediapipe/              # Shared mediapipe models
-│       └── hand_landmarker.task
+│   │   └── label_encoder.pkl
+│   └── dynamic/                # LSTM model (J, Z)
+│       ├── best_model.pth
+│       └── label_encoder.pkl
 ├── src/
 │   ├── assets/                 # Tutorial GIFs
 │   ├── cli.py                  # CLI application entry point

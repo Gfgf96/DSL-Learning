@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+
+# Add parent directory to path for direct execution
+SCRIPT_DIR = Path(__file__).parent
+if str(SCRIPT_DIR.parent) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR.parent))
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -7,8 +15,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import f1_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
-from model import ASLClassifier
-from . import config
+
+from CNN_model.model import ASLClassifier
+from CNN_model import config
 
 
 class ASLDataset(Dataset):
