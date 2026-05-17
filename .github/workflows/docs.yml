@@ -27,8 +27,14 @@ jobs:
         with:
           python-version: 3.x
           
+      - name: Setup uv (project Python manager)
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+          enable-cache: true
+
       - name: Install MkDocs and Material Theme
-        run: pip install mkdocs-material
+        run: uv pip install mkdocs-material
         
       - name: Deploy to GitHub Pages
         run: mkdocs gh-deploy --force
