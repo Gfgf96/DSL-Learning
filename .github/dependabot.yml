@@ -12,6 +12,11 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      # ESLint 10 breaks eslint-plugin-react v7.x compatibility
+      # Waiting for eslint-plugin-react#3977 fix. See: https://github.com/jsx-eslint/eslint-plugin-react/issues/3977
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "pip"
     directory: "/"
