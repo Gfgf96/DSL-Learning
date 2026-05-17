@@ -34,7 +34,7 @@ jobs:
           enable-cache: true
 
       - name: Install MkDocs and Material Theme
-        run: uv pip install mkdocs-material
+        run: uv pip install --system mkdocs-material
         
       - name: Deploy to GitHub Pages
         run: mkdocs gh-deploy --force
