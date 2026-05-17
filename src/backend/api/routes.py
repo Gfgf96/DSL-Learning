@@ -38,7 +38,6 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 FRONTEND_DIR = PROJECT_ROOT / "frontend"
 FRONTEND_OUT_DIR = FRONTEND_DIR / "out"
 ASSETS_DIR = PROJECT_ROOT / "src" / "assets"
-ASSETS_DIR = PROJECT_ROOT / "src" / "assets"
 
 
 @asynccontextmanager
@@ -77,22 +76,22 @@ async def lifespan(app: FastAPI):
     else:
         print(f" Dynamic model not found: {DYNAMIC_MODEL_PATH}")
 
-    # Create app and configure middleware
-    # NOTE: For demo purposes we allow all origins. In production restrict
-    # `allow_origins` to the known frontend host(s) and avoid `"*"`.
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
     yield
 
 
 # Create the FastAPI app with lifespan support
 app = FastAPI(title="Sign Language Learning API", lifespan=lifespan)
+
+# Configure CORS middleware (must be before app starts)
+# NOTE: For demo purposes we allow all origins. In production restrict
+# `allow_origins` to the known frontend host(s) and avoid `"*"`.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # get_index removed in favor of root static mount
