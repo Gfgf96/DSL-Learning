@@ -1,17 +1,29 @@
 version: 2
 updates:
+  # Grouping is the important part here. Ungrouped weekly updates across three
+  # ecosystems produced ~10 open PRs at a time, which all conflict with each
+  # other on the lockfiles as soon as one is merged. One PR per ecosystem per
+  # month merges cleanly and is actually reviewable.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
-    # Allow updates for action versions used in workflows
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    groups:
+      github-actions:
+        patterns: ["*"]
 
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    groups:
+      # Patch and minor bumps are batched into a single PR. Majors are left
+      # ungrouped so they arrive individually and get looked at properly.
+      frontend-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
     ignore:
       # ESLint 10 breaks eslint-plugin-react v7.x compatibility
       # Waiting for eslint-plugin-react#3977 fix. See: https://github.com/jsx-eslint/eslint-plugin-react/issues/3977
@@ -21,5 +33,9 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 10
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    groups:
+      python-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
