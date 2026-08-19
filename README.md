@@ -7,9 +7,6 @@
 
 A real-time, interactive sign language learning application powered by computer vision and deep learning. Learn the NGT (Nederlandse Gebarentaal / Dutch Sign Language) alphabet with instant feedback from AI models.
 
-![App Demonstration](docs/assets/demo.gif)
-*Placeholder: Drop your 10-15 second UI demonstration GIF here.*
-
 ## Features
 
 - **Real-time Hand Detection** - Uses MediaPipe for accurate hand landmark detection
@@ -145,7 +142,7 @@ If you prefer manual installation or the automated script doesn't work for you:
    ```
 
 > [!NOTE]
-> **Model Auto-Download:** The deep learning models and MediaPipe trackers are large files and are not included in the repository. They will be **automatically downloaded** from GitHub Releases the first time you run the application.
+> **Model Auto-Download:** The trained model weights are not included in the repository. They are **automatically downloaded** from GitHub Releases into `models/` the first time you run the application, and reused from there on subsequent runs. Hand tracking itself uses MediaPipe's bundled solution model and needs no separate download.
 
 ## Usage
 
@@ -166,14 +163,15 @@ If you prefer manual installation or the automated script doesn't work for you:
 
 ### Frontend Development
 
-If you want to work on the UI directly, run the Next.js app from the `frontend/` folder:
+If you want to work on the UI directly, run:
 
 ```bash
-cd frontend
-npm run dev
+python main.py --dev
 ```
 
-That starts the site on `http://localhost:3000/` with live reload.
+That starts the Next.js dev server on `http://localhost:3000/` with live reload,
+alongside the API on `http://localhost:8000/`. Running `npm run dev` from
+`frontend/` on its own also works, but then the backend isn't started for you.
 
 ### Using the App
 
@@ -216,7 +214,7 @@ DSL-Learning/
 │   │   └── label_encoder.pkl
 │   └── dynamic/                # LSTM model (J, Z)
 │       ├── best_model.pth
-│       └── label_encoder.pkl
+│       └── classes.npy
 ├── src/
 │   ├── assets/                 # Tutorial GIFs
 │   ├── cli.py                  # CLI application entry point
@@ -327,11 +325,11 @@ NUM_LAYERS = 2                  # LSTM layers
 
 ### Static Model (CNN)
 
-1. **Collect landmark data** (see `data_collect/record_landmarks.py`)
+1. **Collect landmark data** (see `train/data_collect/record_landmarks.py`)
 2. **Prepare dataset** in `.npz` format with normalized landmarks
 3. **Train the model**:
    ```bash
-   cd CNN_model
+   cd train/CNN_model
    python train.py
    ```
 4. **Model saved to**: `models/static/best_model.pth`
@@ -342,7 +340,7 @@ NUM_LAYERS = 2                  # LSTM layers
 2. **Format as**: `(num_samples, 30, 63)` numpy array
 3. **Train the model**:
    ```bash
-   cd LSTM_model
+   cd train/LSTM_model
    python train.py
    ```
 4. **Model saved to**: `models/dynamic/best_model.pth`
@@ -420,15 +418,18 @@ We welcome contributions! Please follow these steps:
    git clone https://github.com/Gfgf96/DSL-Learning.git
    cd DSL-Learning
 
-# Install dev dependencies
-uv pip install -e ".[dev]"
+# Install dependencies (uv syncs the dev group by default)
+uv sync
 
-# Run tests (if available)
+# Enable the pre-commit hooks
+pre-commit install
+
+# Run tests
 pytest
 
-# Format code
-black src/
-isort src/
+# Lint and format
+ruff check .
+ruff format .
 ```
 
 
@@ -463,7 +464,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Gfgf96/DSL-Learning/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Gfgf96/DSL-Learning/discussions)
 - **Email**: Contact via GitHub profile
 
 ## Star the Project
